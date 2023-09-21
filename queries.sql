@@ -1,5 +1,39 @@
 /*Queries that provide answers to the questions from all projects.*/
 
+BEGIN;
+ UPDATE animals
+ SET species = 'unspecified'
+
+ SELECT * FROM animals;
+ ROLLBACK;
+
+ SELECT *  FROM animals;
+
+  BEGIN;
+    UPDATE animals
+    SET species = 'digimon'
+    WHERE name LIKE '%mon';
+    SELECT * FROM animals WHERE name LIKE '%mon';
+
+    UPDATE animals
+    SET species = 'pokemon'
+    WHERE species IS NULL;
+     SELECT * FROM animals WHERE species = 'pokemon'
+     COMMIT;
+
+     SELECT * FROM animals;
+
+
+BEGIN;
+
+    DELETE FROM animals;
+
+    ROLLBACK;
+
+    SELECT * FROM animals;
+    
+
+
 delete from animals where date_of_birth > '2022-01-01';
 DELETE 1
 
