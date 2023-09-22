@@ -1,63 +1,40 @@
 /*Queries that provide answers to the questions from all projects.*/
 
-BEGIN;
- UPDATE animals
- SET species = 'unspecified'
+SELECT a.name
+FROM animals a
+JOIN owners o ON a.owner_id = o.id
+WHERE o.full_name = 'Melody Pond';
 
- SELECT * FROM animals;
- ROLLBACK;
+SELECT a.name
+FROM animals a
+JOIN species s ON a.species_id = s.id
+WHERE s.name = 'Pokemon';
 
- SELECT *  FROM animals;
+SELECT o.full_name, COALESCE(array_agg(a.name), ARRAY[]::text[]) AS animals_owned
+FROM owners o
+LEFT JOIN animals a ON o.id = a.owner_id
+GROUP BY o.full_name;
 
-  BEGIN;
-    UPDATE animals
-    SET species = 'digimon'
-    WHERE name LIKE '%mon';
-    SELECT * FROM animals WHERE name LIKE '%mon';
+SELECT s.name AS species_name, COUNT(*) AS animal_count
+FROM animals a
+JOIN species s ON a.species_id = s.id
+GROUP BY s.name;
 
-    UPDATE animals
-    SET species = 'pokemon'
-    WHERE species IS NULL;
-     SELECT * FROM animals WHERE species = 'pokemon'
-     COMMIT;
+SELECT a.name
+FROM animals a
+JOIN owners o ON a.owner_id = o.id
+JOIN species s ON a.species_id = s.id
+WHERE o.full_name = 'Jennifer Orwell' AND s.name = 'Digimon';
 
-     SELECT * FROM animals;
+SELECT a.name
+FROM animals a
+JOIN owners o ON a.owner_id = o.id
+WHERE o.full_name = 'Dean Winchester'
+AND a.escape_attempt = 0;
 
-
-BEGIN;
-
-    DELETE FROM animals;
-
-    ROLLBACK;
-
-    SELECT * FROM animals;
-    
-
-
-delete from animals where date_of_birth > '2022-01-01';
-DELETE 1
-
-savepoint sp3;
-SAVEPOINT
-
-update animals set weight_kg = weight_kg * -1;
-UPDATE 10
-
-rollback to sp3;
-ROLLBACK
-
-update animals set weight_kg = weight_kg * -1 where weight_kg < 0;
-UPDATE 4
-commit;
-
-SELECT COUNT(*) AS total_animals FROM animals;
-
-select count(*) as animals_never_escape from animals where escape_attempts = 0;
-
-select avg(weight_kg) as average_weight from animals; 
-
-SELECT neutered, SUM(escape_attempt) AS total_escape_attempt FROM animals GROUP BY neutered ORDER BY total_escape_attempt DESC LIMIT 1;
-
-SELECT species, MIN(weight_kg) AS min_weight, MAX(weight_kg) AS max_weight FROM animals GROUP BY species;
-
-SELECT species, AVG(escape_attempt) AS avg_escape_attempt FROM (SELECT species, COUNT(*) AS escape_attempt FROM animals WHERE date_of_birth BETWEEN '1990-01-01' AND '2000-12-31' GROUP BY species) AS subquery GROUP BY species;
+SELECT o.full_name, COUNT(a.id) AS num_owned_animals
+FROM owners o
+LEFT JOIN animals a ON o.id = a.owner_id
+GROUP BY o.full_name
+ORDER BY num_owned_animals DESC
+LIMIT 1;
